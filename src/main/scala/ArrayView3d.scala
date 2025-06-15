@@ -16,14 +16,14 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
   def stride1: Int
   def stride2: Int
 
-  def getPos(i0: Int, i1: Int, i2: Int): Int =
+  def getIndex(i0: Int, i1: Int, i2: Int): Int =
     offset + stride0 * i0 + stride1 * i1 + stride2 * i2
 
   inline def apply(i0: Int, i1: Int, i2: Int): T =
-    data(getPos(i0, i1, i2))
+    data(getIndex(i0, i1, i2))
 
   inline def update(i0: Int, i1: Int, i2: Int, value: T): Unit =
-    data(getPos(i0, i1, i2)) = value
+    data(getIndex(i0, i1, i2)) = value
 
   def containsIndex(i0: Int, i1: Int, i2: Int): Boolean =
     0 <= i0 && i0 < shape0 &&
@@ -60,13 +60,13 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
 
   inline def mapInplace(f: T => T): Unit =
     foreachIndex { (i0, i1, i2) =>
-      val pos = getPos(i0, i1, i2)
+      val pos = getIndex(i0, i1, i2)
       this.data(pos) = f(this.data(pos))
     }
 
   inline def mapWithIndexInplace(f: (T, Int, Int, Int) => T): Unit =
     foreachIndex { (i0, i1, i2) =>
-      val pos = getPos(i0, i1, i2)
+      val pos = getIndex(i0, i1, i2)
       this.data(pos) = f(this.data(pos), i0, i1, i2)
     }
 
@@ -120,7 +120,7 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
     val start1 = ArrayViewUtil.getFirst(t1, shape1)
     val start2 = ArrayViewUtil.getFirst(t2, shape2)
 
-    val offset = getPos(start0, start1, start2)
+    val offset = getIndex(start0, start1, start2)
 
     inline (t0, t1, t2) match {
       case (a: Int, b: Int, c: Int) => ArrayView0dImpl(data, offset = offset)

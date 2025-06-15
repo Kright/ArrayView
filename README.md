@@ -46,7 +46,7 @@ trait ArrayView1d[T]:
   def offset: Int
   def stride0: Int
   
-  def getPos(i0: Int): Int = offset + stride0 * i0
+  def getIndex(i0: Int): Int = offset + stride0 * i0
 
   inline def apply(i0: Int): T = data(getPos(i0))
 
@@ -103,7 +103,7 @@ If you have some special case, for example, float matrix with size 4x4, you may 
 FloatMatrix4x4() extends ArrayView2d[Float]:
   override val data = new Array[Float](16)
   
-  override def getPos(i0: Int, i1: Int): Int = i0 * 4 + i1
+  override def getIndex(i0: Int, i1: Int): Int = i0 * 4 + i1
     
   override inline val hasSimpleFlatLayout = true  
   override inline val shape0 = 4

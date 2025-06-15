@@ -19,14 +19,14 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
   def stride2: Int
   def stride3: Int
 
-  def getPos(i0: Int, i1: Int, i2: Int, i3: Int): Int =
+  def getIndex(i0: Int, i1: Int, i2: Int, i3: Int): Int =
     offset + stride0 * i0 + stride1 * i1 + stride2 * i2 + stride3 * i3
 
   inline def apply(i0: Int, i1: Int, i2: Int, i3: Int): T =
-    data(getPos(i0, i1, i2, i3))
+    data(getIndex(i0, i1, i2, i3))
 
   inline def update(i0: Int, i1: Int, i2: Int, i3: Int, value: T): Unit =
-    data(getPos(i0, i1, i2, i3)) = value
+    data(getIndex(i0, i1, i2, i3)) = value
 
   def containsIndex(i0: Int, i1: Int, i2: Int, i3: Int): Boolean =
     0 <= i0 && i0 < shape0 &&
@@ -66,13 +66,13 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
 
   inline def mapInplace(f: T => T): Unit =
     foreachIndex { (i0, i1, i2, i3) =>
-      val pos = getPos(i0, i1, i2, i3)
+      val pos = getIndex(i0, i1, i2, i3)
       this.data(pos) = f(this.data(pos))
     }
 
   inline def mapWithIndexInplace(f: (T, Int, Int, Int, Int) => T): Unit =
     foreachIndex { (i0, i1, i2, i3) =>
-      val pos = getPos(i0, i1, i2, i3)
+      val pos = getIndex(i0, i1, i2, i3)
       this.data(pos) = f(this.data(pos), i0, i1, i2, i3)
     }
 
@@ -130,7 +130,7 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
     val start2 = ArrayViewUtil.getFirst(t2, shape2)
     val start3 = ArrayViewUtil.getFirst(t3, shape3)
 
-    val offset = getPos(start0, start1, start2, start3)
+    val offset = getIndex(start0, start1, start2, start3)
 
     inline (t0, t1, t2, t3) match {
       case (a: Int, b: Int, c: Int, d: Int) => ArrayView0dImpl(data, offset = offset)
