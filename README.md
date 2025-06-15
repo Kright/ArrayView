@@ -18,6 +18,16 @@ Code is under MIT License, feel free to use it or to suggest improvements.
 
 https://jitpack.io/#Kright/ArrayView
 
+gradle:
+```
+implementation "com.github.Kright:ArrayView:0.1.0"
+```
+
+sbt:
+```
+libraryDependencies += "com.github.Kright" % "ArrayView" % "0.1.0"
+```
+
 ## Examples
 
 ```Scala
