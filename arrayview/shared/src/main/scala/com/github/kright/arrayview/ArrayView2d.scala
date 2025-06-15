@@ -1,6 +1,6 @@
 package com.github.kright.arrayview
 
-import ArrayViewUtil.loop
+import com.github.kright.arrayview.ArrayViewUtil.loop
 
 import scala.reflect.ClassTag
 

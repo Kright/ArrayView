@@ -1,7 +1,8 @@
 package com.github.kright.arrayview
 
+import com.github.kright.arrayview.ArrayViewUtil.loop
+
 import scala.reflect.ClassTag
-import ArrayViewUtil.loop
 
 
 trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:

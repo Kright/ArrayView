@@ -1,7 +1,6 @@
 package com.github.kright.arrayview
 
-import AxisSize.all
-
+import com.github.kright.arrayview.AxisSize.all
 import org.scalatest.funsuite.AnyFunSuite
 
 class SimpleTest extends AnyFunSuite:
