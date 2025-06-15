@@ -20,12 +20,12 @@ https://jitpack.io/#Kright/ArrayView
 
 gradle:
 ```
-implementation "com.github.Kright.ArrayView:arrayview_3:0.1.1"
+implementation "com.github.Kright.ArrayView:arrayview_3:0.1.2"
 ```
 
 sbt:
 ```
-libraryDependencies += "com.github.Kright" % "ArrayView" % "0.1.1"
+libraryDependencies += "com.github.Kright.ArrayView" % "arrayview" % "0.1.2"
 ```
 
 ## Examples
