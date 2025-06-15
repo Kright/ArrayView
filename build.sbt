@@ -1,10 +1,10 @@
 
-ThisBuild / version := "0.1.1-SNAPSHOT"
+ThisBuild / version := "0.1.1"
 
 ThisBuild / scalaVersion := "3.7.1"
 
 ThisBuild / licenses := List(License.MIT)
-ThisBuild / startYear := Some(2022)
+ThisBuild / startYear := Some(2025)
 
 
 lazy val scalatestSettings = Seq(
