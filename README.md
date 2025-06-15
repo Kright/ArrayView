@@ -14,6 +14,10 @@ Code is under MIT License, feel free to use it or to suggest improvements.
 * Primitive types are stored as efficient arrays of primitive types
 * Array views are extensible, it's possible to create concrete implementations, for example `FloatMatrix4x4`
 
+## How to add to a project:
+
+https://jitpack.io/#Kright/ArrayView
+
 ## Examples
 
 ```Scala
