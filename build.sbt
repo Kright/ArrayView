@@ -1,5 +1,6 @@
+import pl.project13.scala.sbt.JmhPlugin
 
-ThisBuild / version := "0.1.2-SNAPSHOT"
+ThisBuild / version := "0.1.3-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.7.1"
 
@@ -19,9 +20,21 @@ lazy val root = (project in file("."))
   ).aggregate(
     arrayview.jvm,
     arrayview.js,
+    benchmark
   )
 
 lazy val arrayview = crossProject(JSPlatform, JVMPlatform)
   .withoutSuffixFor(JVMPlatform)
   .in(file("arrayview"))
   .settings(scalatestSettings *)
+
+lazy val benchmark = project
+  .in(file("benchmark"))
+  .enablePlugins(JmhPlugin)
+  .settings(
+    name := "arrayview-benchmark",
+    scalaVersion := "3.7.1",
+    libraryDependencies += "org.openjdk.jmh" % "jmh-core" % "1.37",
+    libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.37"
+  )
+  .dependsOn(arrayview.jvm)

@@ -59,7 +59,7 @@ trait ArrayView1d[T]:
   def data: Array[T]
   def offset: Int
   def stride0: Int
-  
+
   def getIndex(i0: Int): Int = offset + stride0 * i0
 
   inline def apply(i0: Int): T = data(getPos(i0))
@@ -116,9 +116,9 @@ If you have some special case, for example, float matrix with size 4x4, you may 
 ```Scala
 FloatMatrix4x4() extends ArrayView2d[Float]:
   override val data = new Array[Float](16)
-  
+
   override def getIndex(i0: Int, i1: Int): Int = i0 * 4 + i1
-    
+
   override inline val hasSimpleFlatLayout = true  
   override inline val shape0 = 4
   override inline val shape1 = 4
@@ -129,3 +129,7 @@ FloatMatrix4x4() extends ArrayView2d[Float]:
 
 Note that inline values are not stored as fields, so FloatMatrix4x4 has only `data` as field.
 So it is a lightweight class, which has a full set of ArrayView2d methods.
+
+## Benchmarks
+
+The project includes JMH benchmarks to measure the performance of ArrayView operations. See the [benchmark README](benchmark/README.md) for details on running benchmarks.

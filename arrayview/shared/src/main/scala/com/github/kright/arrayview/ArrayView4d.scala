@@ -101,7 +101,7 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
       this (i0, i1, i2, i3) = value
     }
 
-  def fill(f: (i0: Int, i1: Int, i2: Int, i3: Int) => T): Unit =
+  inline def fill(f: (i0: Int, i1: Int, i2: Int, i3: Int) => T): Unit =
     foreachIndex { (i0, i1, i2, i3) =>
       this (i0, i1, i2, i3) = f(i0, i1, i2, i3)
     }
