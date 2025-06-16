@@ -107,12 +107,11 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
     r
 
 
-  transparent inline def view
-  [T1 <: Int | Range,
-    T2 <: Int | Range,
-    T3 <: Int | Range](inline range0: AxisSize.Size ?=> T1,
-                       inline range1: AxisSize.Size ?=> T2,
-                       inline range2: AxisSize.Size ?=> T3) = {
+  transparent inline def view [T1 <: Int | Range,
+                               T2 <: Int | Range,
+                               T3 <: Int | Range](inline range0: AxisSize.Size ?=> T1,
+                                                  inline range1: AxisSize.Size ?=> T2,
+                                                  inline range2: AxisSize.Size ?=> T3) = {
     val t0 = AxisSize.withAxisSize(shape0, range0)
     val t1 = AxisSize.withAxisSize(shape1, range1)
     val t2 = AxisSize.withAxisSize(shape2, range2)

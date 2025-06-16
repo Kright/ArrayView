@@ -111,14 +111,13 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
     r := this
     r
 
-  transparent inline def view
-  [T1 <: Int | Range,
-    T2 <: Int | Range,
-    T3 <: Int | Range,
-    T4 <: Int | Range](inline range0: AxisSize.Size ?=> T1,
-                       inline range1: AxisSize.Size ?=> T2,
-                       inline range2: AxisSize.Size ?=> T3,
-                       inline range3: AxisSize.Size ?=> T4) = {
+  transparent inline def view [T1 <: Int | Range,
+                               T2 <: Int | Range,
+                               T3 <: Int | Range,
+                               T4 <: Int | Range](inline range0: AxisSize.Size ?=> T1,
+                                                  inline range1: AxisSize.Size ?=> T2,
+                                                  inline range2: AxisSize.Size ?=> T3,
+                                                  inline range3: AxisSize.Size ?=> T4) = {
 
     val t0 = AxisSize.withAxisSize(shape0, range0)
     val t1 = AxisSize.withAxisSize(shape1, range1)

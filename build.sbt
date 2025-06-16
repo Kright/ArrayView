@@ -2,7 +2,7 @@ import pl.project13.scala.sbt.JmhPlugin
 
 ThisBuild / version := "0.1.3-SNAPSHOT"
 
-ThisBuild / scalaVersion := "3.7.1"
+ThisBuild / scalaVersion := "3.3.6"
 
 ThisBuild / licenses := List(License.MIT)
 ThisBuild / startYear := Some(2025)
