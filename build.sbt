@@ -1,6 +1,6 @@
 import pl.project13.scala.sbt.JmhPlugin
 
-ThisBuild / version := "0.1.3-SNAPSHOT"
+ThisBuild / version := "0.1.4-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.3.6"
 

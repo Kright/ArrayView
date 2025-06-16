@@ -20,12 +20,12 @@ https://jitpack.io/#Kright/ArrayView
 
 gradle:
 ```
-implementation "com.github.Kright.ArrayView:arrayview_3:0.1.2"
+implementation "com.github.Kright.ArrayView:arrayview_3:0.1.3"
 ```
 
 sbt:
 ```
-libraryDependencies += "com.github.Kright.ArrayView" % "arrayview" % "0.1.2"
+libraryDependencies += "com.github.Kright.ArrayView" % "arrayview" % "0.1.3"
 ```
 
 ## Examples
@@ -114,7 +114,7 @@ For each dimension there are two implementations. For example, for 2d:
 If you have some special case, for example, float matrix with size 4x4, you may inherit form ArrayView2d:
 
 ```Scala
-FloatMatrix4x4() extends ArrayView2d[Float]:
+class FloatMatrix4x4() extends ArrayView2d[Float]:
   override val data = new Array[Float](16)
 
   override def getIndex(i0: Int, i1: Int): Int = i0 * 4 + i1
