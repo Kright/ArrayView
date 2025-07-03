@@ -10,6 +10,8 @@ trait ArrayViewNd[T, Self]:
   def :=(source: Self): Unit
 
   def flatten(using ClassTag[T]): ArrayView1dFlat[T]
+  
+  def withSimpleLayout(using ClassTag[T]): Self
 
   def reshape(shape0: Int, shape1: Int)(using ClassTag[T]): ArrayView2d[T] =
     flatten.reshape(shape0, shape1)

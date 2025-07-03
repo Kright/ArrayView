@@ -111,6 +111,10 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
     r := this
     r
 
+  override def withSimpleLayout(using ClassTag[T]): ArrayView4d[T] =
+    if (hasSimpleFlatLayout) this
+    else copy  
+
   transparent inline def view [T1 <: Int | Range,
                                T2 <: Int | Range,
                                T3 <: Int | Range,

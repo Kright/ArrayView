@@ -87,6 +87,10 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
     val r = ArrayView1dFlat[T](shape0)
     r := this
     r
+    
+  override def withSimpleLayout(using ClassTag[T]): ArrayView1d[T] =
+    if (hasSimpleFlatLayout) this
+    else copy  
 
   def broadcastTo(view: ArrayView1d[?]): ArrayView1d[T] =
     broadcast(view.shape0)

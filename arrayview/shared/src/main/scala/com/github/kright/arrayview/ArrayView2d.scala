@@ -101,6 +101,10 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
     r := this
     r
 
+  override def withSimpleLayout(using ClassTag[T]): ArrayView2d[T] =
+    if (hasSimpleFlatLayout) this
+    else copy
+
   private def checkRange(first: Int, last: Int, max: Int): Unit =
     require(0 <= first && first < max)
     require(0 <= last && last < max)

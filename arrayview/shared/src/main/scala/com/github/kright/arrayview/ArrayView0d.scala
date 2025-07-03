@@ -25,6 +25,10 @@ trait ArrayView0d[T] extends ArrayViewNd[T, ArrayView0d[T]]:
     r := this
     r
 
+  override def withSimpleLayout(using ClassTag[T]): ArrayView0d[T] =
+    if (hasSimpleFlatLayout) this
+    else copy  
+
   override def flatten(using ClassTag[T]): ArrayView1dFlat[T] =
     if (hasSimpleFlatLayout) ArrayView1dFlat(data)
     else copy.flatten
