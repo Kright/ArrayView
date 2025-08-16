@@ -1,15 +1,18 @@
 package com.github.kright.arrayview
 
-import com.github.kright.arrayview.ArrayViewUtil.loop
+import com.github.kright.arrayview.ArrayViewInternalUtil.loop
 
 import scala.reflect.ClassTag
+import scala.util.chaining.scalaUtilChainingOps
 
 trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
-  
+
   def shape0: Int
+
   def offset: Int
+
   def stride0: Int
-  
+
   override def size: Int = shape0
 
   override def isEmpty: Boolean =
@@ -92,10 +95,10 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
     val r = ArrayView1dFlat[T](shape0)
     r := this
     r
-    
+
   override def withSimpleLayout(using ClassTag[T]): ArrayView1d[T] =
     if (hasSimpleFlatLayout) this
-    else copy  
+    else copy
 
   def broadcastTo(view: ArrayView1d[?]): ArrayView1d[T] =
     broadcast(view.shape0)
@@ -106,7 +109,7 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
     if (isEmpty && newShape0 != 0) {
       throw new IllegalArgumentException(s"Cannot broadcast empty view to shape $newShape0")
     }
-    
+
     require(newShape0 == shape0 || shape0 <= 1 || stride0 == 0)
 
     ArrayView1dImpl[T](
@@ -174,12 +177,12 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
   transparent inline def view[T1 <: Int | Range](inline range0: AxisSize.Size ?=> T1) = {
     val t0 = AxisSize.withAxisSize(shape0, range0)
 
-    val start0 = ArrayViewUtil.getFirst(t0, shape0)
+    val start0 = ArrayViewInternalUtil.getFirst(t0, shape0)
 
     val offset = getIndex(start0)
 
     inline (t0) match {
-      case a: Int => ArrayView0dImpl(data, offset = offset)
+      case _: Int => ArrayView0dImpl(data, offset = offset)
       case a: Range => ArrayView1dImpl(data, shape0 = a.size, offset = offset, stride0 = stride0 * a.step)
     }
   }
@@ -194,3 +197,12 @@ object ArrayView1d:
   def apply[T](data: Array[T], shape0: Int, offset: Int, stride0: Int): ArrayView1d[T] =
     if (data.length == shape0 && offset == 0 && stride0 == 1) ArrayView1dFlat(data)
     else ArrayView1dImpl(data, shape0, offset, stride0)
+
+  def concat[T: ClassTag](arrayViews: Iterable[ArrayView1d[T]]): ArrayView1dFlat[T] =
+    apply[T](arrayViews.map(_.shape0).sum).tap { result =>
+      var offset = 0
+      for (view <- arrayViews) {
+        result.view(offset until (offset + view.shape0)) := view
+        offset += view.shape0
+      }
+    }

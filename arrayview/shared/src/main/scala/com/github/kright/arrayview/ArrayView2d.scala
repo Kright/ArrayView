@@ -1,8 +1,9 @@
 package com.github.kright.arrayview
 
-import com.github.kright.arrayview.ArrayViewUtil.loop
+import com.github.kright.arrayview.ArrayViewInternalUtil.loop
 
 import scala.reflect.ClassTag
+import scala.util.chaining.scalaUtilChainingOps
 
 
 trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
@@ -113,7 +114,7 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
     else copy
 
 
-  def transposed(using ClassTag[T]): ArrayView2dImpl[T] =
+  def transposed: ArrayView2dImpl[T] =
     ArrayView2dImpl[T](
       data,
       shape0 = shape1,
@@ -165,15 +166,15 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
     val t0 = AxisSize.withAxisSize(shape0, range0)
     val t1 = AxisSize.withAxisSize(shape1, range1)
 
-    val start0 = ArrayViewUtil.getFirst(t0, shape0)
-    val start1 = ArrayViewUtil.getFirst(t1, shape1)
+    val start0 = ArrayViewInternalUtil.getFirst(t0, shape0)
+    val start1 = ArrayViewInternalUtil.getFirst(t1, shape1)
 
     val offset = getIndex(start0, start1)
 
     inline (t0, t1) match {
-      case (a: Int, b: Int) => ArrayView0dImpl(data, offset = offset)
-      case (a: Range, b: Int) => ArrayView1dImpl(data, shape0 = a.size, offset = offset, stride0 = stride0 * a.step)
-      case (a: Int, b: Range) => ArrayView1dImpl(data, shape0 = b.size, offset = offset, stride0 = stride1 * b.step)
+      case (_: Int, _: Int) => ArrayView0dImpl(data, offset = offset)
+      case (a: Range, _: Int) => ArrayView1dImpl(data, shape0 = a.size, offset = offset, stride0 = stride0 * a.step)
+      case (_: Int, b: Range) => ArrayView1dImpl(data, shape0 = b.size, offset = offset, stride0 = stride1 * b.step)
       case (a: Range, b: Range) => ArrayView2dImpl(data, shape0 = a.size, shape1 = b.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride1 * b.step)
     }
   }
@@ -189,3 +190,34 @@ object ArrayView2d:
   def apply[T](data: Array[T], shape0: Int, shape1: Int, offset: Int, stride0: Int, stride1: Int): ArrayView2d[T] =
     if (data.length == shape0 * shape1 && offset == 0 && stride0 == shape1 && stride1 == 1) ArrayView2dFlat(data, shape0, shape1)
     else ArrayView2dImpl(data, shape0, shape1, offset, stride0, stride1)
+
+  def concat[T: ClassTag](arrayViews: Iterable[ArrayView2d[T]], axis: Int): ArrayView2dFlat[T] =
+    if (arrayViews.isEmpty) {
+      throw IllegalArgumentException("For empty arrayViews shape could not be defined")
+    }
+
+    axis match
+      case 0 =>
+        apply[T](
+          arrayViews.map(_.shape0).sum,
+          arrayViews.head.shape1,
+        ).tap { result =>
+          var offset0 = 0
+          for (view <- arrayViews) {
+            result.view(offset0 until (offset0 + view.shape0), AxisSize.all) := view
+            offset0 += view.shape0
+          }
+        }
+      case 1 =>
+        apply[T](
+          arrayViews.head.shape0,
+          arrayViews.map(_.shape1).sum
+        ).tap { result =>
+          var offset1 = 0
+          for (view <- arrayViews) {
+            result.view(AxisSize.all, offset1 until (offset1 + view.shape1)) := view
+            offset1 += view.shape1
+          }
+        }
+      case _ =>
+        throw IllegalArgumentException(s"Invalid axis: $axis. Must be 0 or 1")

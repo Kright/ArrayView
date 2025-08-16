@@ -1,8 +1,9 @@
 package com.github.kright.arrayview
 
-import com.github.kright.arrayview.ArrayViewUtil.loop
+import com.github.kright.arrayview.ArrayViewInternalUtil.loop
 
 import scala.reflect.ClassTag
+import scala.util.chaining.scalaUtilChainingOps
 
 
 trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
@@ -133,29 +134,29 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
     val t2 = AxisSize.withAxisSize(shape2, range2)
     val t3 = AxisSize.withAxisSize(shape3, range3)
 
-    val start0 = ArrayViewUtil.getFirst(t0, shape0)
-    val start1 = ArrayViewUtil.getFirst(t1, shape1)
-    val start2 = ArrayViewUtil.getFirst(t2, shape2)
-    val start3 = ArrayViewUtil.getFirst(t3, shape3)
+    val start0 = ArrayViewInternalUtil.getFirst(t0, shape0)
+    val start1 = ArrayViewInternalUtil.getFirst(t1, shape1)
+    val start2 = ArrayViewInternalUtil.getFirst(t2, shape2)
+    val start3 = ArrayViewInternalUtil.getFirst(t3, shape3)
 
     val offset = getIndex(start0, start1, start2, start3)
 
     inline (t0, t1, t2, t3) match {
-      case (a: Int, b: Int, c: Int, d: Int) => ArrayView0dImpl(data, offset = offset)
-      case (a: Range, b: Int, c: Int, d: Int) => ArrayView1dImpl(data, shape0 = a.size, offset = offset, stride0 = stride0 * a.step)
-      case (a: Int, b: Range, c: Int, d: Int) => ArrayView1dImpl(data, shape0 = b.size, offset = offset, stride0 = stride1 * b.step)
-      case (a: Int, b: Int, c: Range, d: Int) => ArrayView1dImpl(data, shape0 = c.size, offset = offset, stride0 = stride2 * c.step)
-      case (a: Int, b: Int, c: Int, d: Range) => ArrayView1dImpl(data, shape0 = d.size, offset = offset, stride0 = stride3 * d.step)
-      case (a: Range, b: Range, c: Int, d: Int) => ArrayView2dImpl(data, shape0 = a.size, shape1 = b.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride1 * b.step)
-      case (a: Range, b: Int, c: Range, d: Int) => ArrayView2dImpl(data, shape0 = a.size, shape1 = c.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride2 * c.step)
-      case (a: Range, b: Int, c: Int, d: Range) => ArrayView2dImpl(data, shape0 = a.size, shape1 = d.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride3 * d.step)
-      case (a: Int, b: Range, c: Range, d: Int) => ArrayView2dImpl(data, shape0 = b.size, shape1 = c.size, offset = offset, stride0 = stride1 * b.step, stride1 = stride2 * c.step)
-      case (a: Int, b: Range, c: Int, d: Range) => ArrayView2dImpl(data, shape0 = b.size, shape1 = d.size, offset = offset, stride0 = stride1 * b.step, stride1 = stride3 * d.step)
-      case (a: Int, b: Int, c: Range, d: Range) => ArrayView2dImpl(data, shape0 = c.size, shape1 = d.size, offset = offset, stride0 = stride2 * c.step, stride1 = stride3 * d.step)
-      case (a: Range, b: Range, c: Range, d: Int) => ArrayView3dImpl(data, shape0 = a.size, shape1 = b.size, shape2 = c.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride1 * b.step, stride2 = stride2 * c.step)
-      case (a: Range, b: Range, c: Int, d: Range) => ArrayView3dImpl(data, shape0 = a.size, shape1 = b.size, shape2 = d.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride1 * b.step, stride2 = stride3 * d.step)
-      case (a: Range, b: Int, c: Range, d: Range) => ArrayView3dImpl(data, shape0 = a.size, shape1 = c.size, shape2 = d.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride2 * c.step, stride2 = stride3 * d.step)
-      case (a: Int, b: Range, c: Range, d: Range) => ArrayView3dImpl(data, shape0 = b.size, shape1 = c.size, shape2 = d.size, offset = offset, stride0 = stride1 * b.step, stride1 = stride2 * c.step, stride2 = stride3 * d.step)
+      case (_: Int, _: Int, _: Int, _: Int) => ArrayView0dImpl(data, offset = offset)
+      case (a: Range, _: Int, _: Int, _: Int) => ArrayView1dImpl(data, shape0 = a.size, offset = offset, stride0 = stride0 * a.step)
+      case (_: Int, b: Range, _: Int, _: Int) => ArrayView1dImpl(data, shape0 = b.size, offset = offset, stride0 = stride1 * b.step)
+      case (_: Int, _: Int, c: Range, _: Int) => ArrayView1dImpl(data, shape0 = c.size, offset = offset, stride0 = stride2 * c.step)
+      case (_: Int, _: Int, _: Int, d: Range) => ArrayView1dImpl(data, shape0 = d.size, offset = offset, stride0 = stride3 * d.step)
+      case (a: Range, b: Range, _: Int, _: Int) => ArrayView2dImpl(data, shape0 = a.size, shape1 = b.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride1 * b.step)
+      case (a: Range, _: Int, c: Range, _: Int) => ArrayView2dImpl(data, shape0 = a.size, shape1 = c.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride2 * c.step)
+      case (a: Range, _: Int, _: Int, d: Range) => ArrayView2dImpl(data, shape0 = a.size, shape1 = d.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride3 * d.step)
+      case (_: Int, b: Range, c: Range, _: Int) => ArrayView2dImpl(data, shape0 = b.size, shape1 = c.size, offset = offset, stride0 = stride1 * b.step, stride1 = stride2 * c.step)
+      case (_: Int, b: Range, _: Int, d: Range) => ArrayView2dImpl(data, shape0 = b.size, shape1 = d.size, offset = offset, stride0 = stride1 * b.step, stride1 = stride3 * d.step)
+      case (_: Int, _: Int, c: Range, d: Range) => ArrayView2dImpl(data, shape0 = c.size, shape1 = d.size, offset = offset, stride0 = stride2 * c.step, stride1 = stride3 * d.step)
+      case (a: Range, b: Range, c: Range, _: Int) => ArrayView3dImpl(data, shape0 = a.size, shape1 = b.size, shape2 = c.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride1 * b.step, stride2 = stride2 * c.step)
+      case (a: Range, b: Range, _: Int, d: Range) => ArrayView3dImpl(data, shape0 = a.size, shape1 = b.size, shape2 = d.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride1 * b.step, stride2 = stride3 * d.step)
+      case (a: Range, _: Int, c: Range, d: Range) => ArrayView3dImpl(data, shape0 = a.size, shape1 = c.size, shape2 = d.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride2 * c.step, stride2 = stride3 * d.step)
+      case (_: Int, b: Range, c: Range, d: Range) => ArrayView3dImpl(data, shape0 = b.size, shape1 = c.size, shape2 = d.size, offset = offset, stride0 = stride1 * b.step, stride1 = stride2 * c.step, stride2 = stride3 * d.step)
       case (a: Range, b: Range, c: Range, d: Range) => ArrayView4dImpl(data, shape0 = a.size, shape1 = b.size, shape2 = c.size, shape3 = d.size, offset = offset, stride0 = stride0 * a.step, stride1 = stride1 * b.step, stride2 = stride2 * c.step, stride3 = stride3 * d.step)
     }
   }
@@ -230,3 +231,64 @@ object ArrayView4d:
   def apply[T](data: Array[T], shape0: Int, shape1: Int, shape2: Int, shape3: Int, offset: Int, stride0: Int, stride1: Int, stride2: Int, stride3: Int): ArrayView4d[T] =
     if (data.length == shape0 * shape1 * shape2 * shape3 && offset == 0 && stride0 == shape1 * shape2 * shape3 && stride1 == shape2 * shape3 && stride2 == shape3 && stride3 == 1) ArrayView4dFlat(data, shape0, shape1, shape2, shape3)
     else ArrayView4dImpl(data, shape0, shape1, shape2, shape3, offset, stride0, stride1, stride2, stride3)
+    
+  def concat[T: ClassTag](arrayViews: Iterable[ArrayView4d[T]], axis: Int): ArrayView4dFlat[T] =
+    if (arrayViews.isEmpty) {
+      throw IllegalArgumentException("For empty arrayViews shape could not be defined")
+    }
+
+    axis match
+      case 0 => 
+        apply[T](
+          arrayViews.map(_.shape0).sum,
+          arrayViews.head.shape1,
+          arrayViews.head.shape2,
+          arrayViews.head.shape3,
+        ).tap { result =>
+          var offset0 = 0
+          for (view <- arrayViews) {
+            result.view(offset0 until (offset0 + view.shape0), AxisSize.all, AxisSize.all, AxisSize.all) := view
+            offset0 += view.shape0
+          }
+        }
+      case 1 =>
+        apply[T](
+          arrayViews.head.shape0,
+          arrayViews.map(_.shape1).sum,
+          arrayViews.head.shape2,
+          arrayViews.head.shape3
+        ).tap { result =>
+          var offset1 = 0
+          for (view <- arrayViews) {
+            result.view(AxisSize.all, offset1 until (offset1 + view.shape1), AxisSize.all, AxisSize.all) := view
+            offset1 += view.shape1
+          }
+        }
+      case 2 =>
+        apply[T](
+          arrayViews.head.shape0,
+          arrayViews.head.shape1,
+          arrayViews.map(_.shape2).sum,
+          arrayViews.head.shape3
+        ).tap { result =>
+          var offset2 = 0
+          for (view <- arrayViews) {
+            result.view(AxisSize.all, AxisSize.all, offset2 until (offset2 + view.shape2), AxisSize.all) := view
+            offset2 += view.shape2
+          }
+        }
+      case 3 =>
+        apply[T](
+          arrayViews.head.shape0,
+          arrayViews.head.shape1,
+          arrayViews.head.shape2,
+          arrayViews.map(_.shape3).sum
+        ).tap { result =>
+          var offset3 = 0
+          for (view <- arrayViews) {
+            result.view(AxisSize.all, AxisSize.all, AxisSize.all, offset3 until (offset3 + view.shape3)) := view
+            offset3 += view.shape3
+          }
+        }
+      case _ =>
+        throw IllegalArgumentException(s"Invalid axis: $axis. Must be 0, 1, 2, or 3")

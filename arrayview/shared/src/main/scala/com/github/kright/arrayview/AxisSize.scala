@@ -7,7 +7,5 @@ object AxisSize:
 
   inline def all(using size: AxisSize.Size): Range = 0 until size
 
-  inline def withAxisSize[T](size: Int, inline f: AxisSize.Size ?=> T): T = {
-    implicit val givenSize: Size = size
-    f
-  }
+  inline def withAxisSize[T](size: Int, inline f: AxisSize.Size ?=> T): T = 
+    f(using size)

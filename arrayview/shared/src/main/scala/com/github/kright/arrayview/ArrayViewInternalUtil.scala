@@ -1,7 +1,7 @@
-package com.github.kright.arrayview // imports Quotes, Expr
+package com.github.kright.arrayview
 
 
-private[arrayview] object ArrayViewUtil:
+private[arrayview] object ArrayViewInternalUtil:
   private def checkRange(first: Int, last: Int, max: Int): Unit =
     require(0 <= first && first < max)
     require(0 <= last && last < max)
@@ -18,7 +18,10 @@ private[arrayview] object ArrayViewUtil:
           val last = r.last
           checkRange(first, last, max)
           first
-        } else 0
+        } else {
+          // range is empty, so an index could be any
+          0
+        }
       }
     }
 
@@ -27,4 +30,4 @@ private[arrayview] object ArrayViewUtil:
     while (i < count) {
       f(i)
       i += 1
-    }  
+    }
