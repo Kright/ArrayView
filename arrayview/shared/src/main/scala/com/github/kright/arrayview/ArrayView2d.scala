@@ -6,7 +6,7 @@ import scala.reflect.ClassTag
 
 
 trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
-  
+
   def shape0: Int
   def shape1: Int
 
@@ -81,9 +81,9 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
     r
 
   override def :=(other: ArrayView2d[T]): Unit =
-    require(hasSameSize(other))
+    val broadcastedOther = other.broadcastTo(this)
     foreachIndex { (i0, i1) =>
-      this (i0, i1) = other(i0, i1)
+      this (i0, i1) = broadcastedOther(i0, i1)
     }
 
   def fill(value: T): Unit =

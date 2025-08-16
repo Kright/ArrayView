@@ -68,9 +68,9 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
     r
 
   override def :=(other: ArrayView1d[T]): Unit =
-    require(hasSameSize(other))
+    val broadcastedOther = other.broadcastTo(this)
     foreachIndex { i0 =>
-      this (i0) = other(i0)
+      this (i0) = broadcastedOther(i0)
     }
 
   def fill(value: T): Unit =
