@@ -142,6 +142,10 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
   def broadcast(newShape0: Int = shape0, newShape1: Int = shape1): ArrayView2d[T] =
     if (newShape0 == shape0 && newShape1 == shape1) return this
 
+    if (isEmpty && newShape0 != 0 && newShape1 != 0) {
+      throw new IllegalArgumentException(s"Cannot broadcast empty view to shape $newShape0 x $newShape1")
+    }
+    
     require(newShape0 == shape0 || shape0 <= 1 || stride0 == 0)
     require(newShape1 == shape1 || shape1 <= 1 || stride1 == 0)
 

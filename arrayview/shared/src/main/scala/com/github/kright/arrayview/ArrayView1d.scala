@@ -103,9 +103,18 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
   def broadcast(newShape0: Int = shape0): ArrayView1d[T] =
     if (newShape0 == shape0) return this
 
-    require(shape0 <= 1 || stride0 == 0)
+    if (isEmpty && newShape0 != 0) {
+      throw new IllegalArgumentException(s"Cannot broadcast empty view to shape $newShape0")
+    }
+    
+    require(newShape0 == shape0 || shape0 <= 1 || stride0 == 0)
 
-    ArrayView1dImpl[T](data, shape0 = newShape0, offset = offset, stride0 = 0)
+    ArrayView1dImpl[T](
+      data,
+      shape0 = newShape0,
+      offset = offset,
+      stride0 = if (shape0 <= 1) 0 else stride0
+    )
 
   override def flatten(using ClassTag[T]): ArrayView1dFlat[T] =
     if (hasSimpleFlatLayout) ArrayView1dFlat(data)
