@@ -1,14 +1,12 @@
 package com.github.kright.arrayview.benchmarks
 
+import com.github.kright.arrayview.benchmarks.ArrayView4x4.matrixSize
 import com.github.kright.arrayview.{ArrayView2d, ArrayView4d}
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
 
 import java.util.concurrent.TimeUnit
 import scala.compiletime.uninitialized
-
-
-private inline val size = 4
 
 /**
  * results on my PC:
@@ -51,23 +49,23 @@ class Matrix4x4MultiplicationBenchmark:
   var arrayView4dV2: ArrayView4d[Double] = uninitialized
 
   private def makeMatrixArray(): Array[Double] =
-    val result = new Array[Double](size * size)
+    val result = new Array[Double](matrixSize * matrixSize)
     for (i <- result.indices) {
       result(i) = util.Random.nextDouble()
     }
     result
 
   private def makeMatrixAsArrays(elems: Array[Double]): Array[Array[Double]] =
-    val result = Array.ofDim[Double](size, size)
-    for (i <- 0 until size; j <- 0 until size) {
-      result(i)(j) = elems(i * size + j)
+    val result = Array.ofDim[Double](matrixSize, matrixSize)
+    for (i <- 0 until matrixSize; j <- 0 until matrixSize) {
+      result(i)(j) = elems(i * matrixSize + j)
     }
     result
 
   private def makeMatrix4x4(elems: Array[Double]): Matrix4x4 =
     val result = new Matrix4x4
-    for (i <- 0 until size; j <- 0 until size) {
-      result(i, j) = elems(i * size + j)
+    for (i <- 0 until matrixSize; j <- 0 until matrixSize) {
+      result(i, j) = elems(i * matrixSize + j)
     }
     result
 
@@ -79,8 +77,8 @@ class Matrix4x4MultiplicationBenchmark:
     matrixAsArrays = makeMatrixAsArrays(matrixArray)
     matrixAsArrays2 = makeMatrixAsArrays(matrixArray2)
 
-    matrixArrayView = ArrayView2d(matrixArray, size, size).copy
-    matrixArrayView2 = ArrayView2d(matrixArray2, size, size).copy
+    matrixArrayView = ArrayView2d(matrixArray, matrixSize, matrixSize).copy
+    matrixArrayView2 = ArrayView2d(matrixArray2, matrixSize, matrixSize).copy
 
     matrix4x4 = makeMatrix4x4(matrixArray)
     matrix4x4v2 = makeMatrix4x4(matrixArray2)
@@ -100,15 +98,15 @@ class Matrix4x4MultiplicationBenchmark:
     val a = matrixArray
     val b = matrixArray2
 
-    val result = new Array[Double](size * size)
+    val result = new Array[Double](matrixSize * matrixSize)
 
-    loop(size) { y =>
-      loop(size) { x =>
+    loop(matrixSize) { y =>
+      loop(matrixSize) { x =>
         var sum = 0.0
-        loop(size) { k =>
-          sum += a(y * size + k) * b(k * size + x)
+        loop(matrixSize) { k =>
+          sum += a(y * matrixSize + k) * b(k * matrixSize + x)
         }
-        result(y * size + x) = sum
+        result(y * matrixSize + x) = sum
       }
     }
 
@@ -120,12 +118,12 @@ class Matrix4x4MultiplicationBenchmark:
     val a = matrixAsArrays
     val b = matrixAsArrays2
 
-    val result = Array.ofDim[Double](size, size)
+    val result = Array.ofDim[Double](matrixSize, matrixSize)
 
-    loop(size) { y =>
-      loop(size) { x =>
+    loop(matrixSize) { y =>
+      loop(matrixSize) { x =>
         var sum = 0.0
-        loop(size) { k =>
+        loop(matrixSize) { k =>
           sum += a(y)(k) * b(k)(x)
         }
         result(y)(x) = sum
@@ -140,12 +138,12 @@ class Matrix4x4MultiplicationBenchmark:
     val a = matrixArrayView
     val b = matrixArrayView2
 
-    val result = ArrayView2d[Double](size, size)
+    val result = ArrayView2d[Double](matrixSize, matrixSize)
 
-    loop(size) { y =>
-      loop(size) { x =>
+    loop(matrixSize) { y =>
+      loop(matrixSize) { x =>
         var sum = 0.0
-        loop(size) { k =>
+        loop(matrixSize) { k =>
           sum += a(y, k) * b(k, x)
         }
         result(y, x) = sum
@@ -160,11 +158,11 @@ class Matrix4x4MultiplicationBenchmark:
     val a = matrixArrayView
     val b = matrixArrayView2
 
-    val result = ArrayView2d[Double](size, size)
+    val result = ArrayView2d[Double](matrixSize, matrixSize)
 
     result.fill { (y, x) =>
       var sum = 0.0
-      loop(size) { k =>
+      loop(matrixSize) { k =>
         sum += a(y, k) * b(k, x)
       }
       sum
@@ -180,10 +178,10 @@ class Matrix4x4MultiplicationBenchmark:
 
     val result = new Matrix4x4
 
-    loop(size) { y =>
-      loop(size) { x =>
+    loop(matrixSize) { y =>
+      loop(matrixSize) { x =>
         var sum = 0.0
-        loop(size) { k =>
+        loop(matrixSize) { k =>
           sum += a(y, k) * b(k, x)
         }
         result(y, x) = sum
@@ -200,10 +198,10 @@ class Matrix4x4MultiplicationBenchmark:
 
     val result = ArrayView4x4[Double]()
 
-    loop(size) { y =>
-      loop(size) { x =>
+    loop(matrixSize) { y =>
+      loop(matrixSize) { x =>
         var sum = 0.0
-        loop(size) { k =>
+        loop(matrixSize) { k =>
           sum += a(y, k) * b(k, x)
         }
         result(y, x) = sum
@@ -220,10 +218,10 @@ class Matrix4x4MultiplicationBenchmark:
 
     val result = new ArrayView4x4Double
 
-    loop(size) { y =>
-      loop(size) { x =>
+    loop(matrixSize) { y =>
+      loop(matrixSize) { x =>
         var sum = 0.0
-        loop(size) { k =>
+        loop(matrixSize) { k =>
           sum += a(y, k) * b(k, x)
         }
         result(y, x) = sum
@@ -240,10 +238,10 @@ class Matrix4x4MultiplicationBenchmark:
 
     val result = ArrayView4d[Double](1, 1, 4, 4)
 
-    loop(size) { y =>
-      loop(size) { x =>
+    loop(matrixSize) { y =>
+      loop(matrixSize) { x =>
         var sum = 0.0
-        loop(size) { k =>
+        loop(matrixSize) { k =>
           sum += a(0, 0, y, k) * b(0, 0, k, x)
         }
         result(0, 0, y, x) = sum
