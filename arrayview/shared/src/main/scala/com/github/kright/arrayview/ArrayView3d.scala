@@ -16,6 +16,11 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
   def stride0: Int
   def stride1: Int
   def stride2: Int
+  
+  override def size: Int = shape0 * shape1 * shape2
+
+  override def isEmpty: Boolean =
+    shape0 == 0 || shape1 == 0 || shape2 == 0
 
   def getIndex(i0: Int, i1: Int, i2: Int): Int =
     offset + stride0 * i0 + stride1 * i1 + stride2 * i2
@@ -33,7 +38,7 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
 
   def hasSameSize(other: ArrayView3d[?]): Boolean =
     shape0 == other.shape0 && shape1 == other.shape1 && shape2 == other.shape2
-
+  
   def isCube: Boolean =
     shape0 == shape1 && shape1 == shape2
 

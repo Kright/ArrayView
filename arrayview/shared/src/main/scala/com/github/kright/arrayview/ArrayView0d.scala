@@ -11,6 +11,10 @@ import scala.reflect.ClassTag
 trait ArrayView0d[T] extends ArrayViewNd[T, ArrayView0d[T]]:
   def offset: Int
 
+  override def size: Int = 1
+
+  override def isEmpty: Boolean = false
+
   def apply(): T =
     data(offset)
 

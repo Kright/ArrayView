@@ -9,6 +9,11 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
   def shape0: Int
   def offset: Int
   def stride0: Int
+  
+  override def size: Int = shape0
+
+  override def isEmpty: Boolean =
+    shape0 == 0
 
   def getIndex(i0: Int): Int =
     offset + stride0 * i0

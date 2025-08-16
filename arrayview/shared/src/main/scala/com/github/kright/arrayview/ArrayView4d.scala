@@ -18,6 +18,11 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
   def stride1: Int
   def stride2: Int
   def stride3: Int
+  
+  override def size: Int = shape0 * shape1 * shape2 * shape3
+
+  override def isEmpty: Boolean =
+    shape0 == 0 || shape1 == 0 || shape2 == 0 || shape3 == 0
 
   def getIndex(i0: Int, i1: Int, i2: Int, i3: Int): Int =
     offset + stride0 * i0 + stride1 * i1 + stride2 * i2 + stride3 * i3
@@ -36,7 +41,7 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
 
   def hasSameSize(other: ArrayView4d[?]): Boolean =
     shape0 == other.shape0 && shape1 == other.shape1 && shape2 == other.shape2 && shape3 == other.shape3
-
+  
   def isHypercube: Boolean =
     shape0 == shape1 && shape1 == shape2 && shape2 == shape3
 

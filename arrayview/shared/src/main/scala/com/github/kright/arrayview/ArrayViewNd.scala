@@ -7,6 +7,12 @@ trait ArrayViewNd[T, Self]:
 
   def hasSimpleFlatLayout: Boolean
 
+  /** total number of available elements, multiplication of size along each dimension */
+  def size: Int
+
+  def isEmpty: Boolean =
+    size == 0
+  
   def :=(source: Self): Unit
 
   def flatten(using ClassTag[T]): ArrayView1dFlat[T]
