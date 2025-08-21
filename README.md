@@ -45,7 +45,7 @@ val first: ArrayView0d[Int] = arr.view(0, 0, 0)
 val subArray: ArrayView1d[Int] = arr.view(0, 1 until (size - 1), all.reverse)
 
 // reshaping
-val array2d: ArrayView0d[Int] = arr.reshape(3 * 4, 5)
+val array2d: ArrayView2d[Int] = arr.reshape(3 * 4, 5)
 
 // assigning values
 arr.view(2, 3, all) := arr.view(0, 0, all)
