@@ -1,6 +1,6 @@
 import pl.project13.scala.sbt.JmhPlugin
 
-ThisBuild / version := "0.1.7-SNAPSHOT"
+ThisBuild / version := "0.2.0"
 
 ThisBuild / scalaVersion := "3.8.3"
 
@@ -47,3 +47,7 @@ lazy val benchmark = project
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.37"
   )
   .dependsOn(arrayview.jvm)
+
+// fix for jitpack
+publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
+publishM2Configuration := publishM2Configuration.value.withOverwrite(true)
