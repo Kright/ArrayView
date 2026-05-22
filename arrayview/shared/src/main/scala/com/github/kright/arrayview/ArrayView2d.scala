@@ -114,7 +114,7 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
     else copy
 
 
-  def transposed: ArrayView2dImpl[T] =
+  def transposed: ArrayView2d[T] =
     ArrayView2dImpl[T](
       data,
       shape0 = shape1,
