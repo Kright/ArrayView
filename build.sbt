@@ -2,15 +2,15 @@ import pl.project13.scala.sbt.JmhPlugin
 
 ThisBuild / version := "0.1.7-SNAPSHOT"
 
-ThisBuild / scalaVersion := "3.7.2"
+ThisBuild / scalaVersion := "3.8.3"
 
 ThisBuild / licenses := List(License.MIT)
 ThisBuild / startYear := Some(2025)
 
 
 lazy val scalatestSettings = Seq(
-  libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % "test",
-  libraryDependencies += "org.scalatestplus" %% "scalacheck-1-18" % "3.2.19.0" % "test",
+  libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.20" % "test",
+  libraryDependencies += "org.scalatestplus" %% "scalacheck-1-19" % "3.2.20.0" % "test",
 )
 
 lazy val compilerFlags =
@@ -42,7 +42,7 @@ lazy val benchmark = project
   .settings(compilerFlags)
   .settings(
     name := "arrayview-benchmark",
-    scalaVersion := "3.7.1",
+    scalaVersion := "3.8.3",
     libraryDependencies += "org.openjdk.jmh" % "jmh-core" % "1.37",
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.37"
   )
