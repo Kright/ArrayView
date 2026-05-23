@@ -28,6 +28,7 @@ ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT")
 
 ThisBuild / sonatypeCredentialHost := "central.sonatype.com"
 ThisBuild / sonatypeRepository := "https://central.sonatype.com/service/local"
+ThisBuild / sonatypeProfileName := "me.kright"
 
 lazy val sonatypeSettings = Seq(
   publishMavenStyle := true,
@@ -51,6 +52,7 @@ lazy val compilerFlags =
   )
 
 lazy val root = (project in file("."))
+  .settings(sonatypeSettings)
   .settings(
     name := "arrayview-root",
     publish / skip := true,
