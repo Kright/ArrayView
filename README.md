@@ -31,8 +31,8 @@ libraryDependencies += "com.github.Kright.ArrayView" % "arrayview" % "0.1.6"
 ## Examples
 
 ```Scala
-import com.github.kright.arrayview._
-import com.github.kright.arrayview.AxisSize.{Size, size, all}
+import me.kright.arrayview._
+import me.kright.arrayview.AxisSize.{Size, size, all}
 
 val arr = new ArrayView3d[Int](3, 4, 5)
 

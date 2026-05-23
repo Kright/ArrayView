@@ -35,7 +35,7 @@ The `ArrayViewBenchmark` class contains benchmarks for:
 
 To add new benchmarks:
 
-1. Create a new class in the `com.github.kright.arrayview.benchmarks` package
+1. Create a new class in the `me.kright.arrayview.benchmarks` package
 2. Annotate the class with JMH annotations (`@State`, `@BenchmarkMode`, etc.)
 3. Add methods annotated with `@Benchmark`
 4. Run the benchmarks using the commands above

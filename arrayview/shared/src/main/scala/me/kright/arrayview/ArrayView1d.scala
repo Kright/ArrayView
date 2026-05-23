@@ -1,0 +1,216 @@
+package me.kright.arrayview
+
+import me.kright.arrayview.ArrayViewInternalUtil.loop
+
+import scala.reflect.ClassTag
+import scala.util.chaining.scalaUtilChainingOps
+
+trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
+
+  def shape0: Int
+
+  def offset: Int
+
+  def stride0: Int
+
+  override def size: Int = shape0
+
+  override def isEmpty: Boolean =
+    shape0 == 0
+
+  def getIndex(i0: Int): Int =
+    offset + stride0 * i0
+
+  inline def apply(i0: Int): T =
+    data(getIndex(i0))
+
+  inline def update(i0: Int, value: T): Unit =
+    data(getIndex(i0)) = value
+
+  def containsIndex(i0: Int): Boolean =
+    0 <= i0 && i0 < shape0
+
+  def hasSameSize(other: ArrayView1d[?]): Boolean =
+    shape0 == other.shape0
+
+  inline def foreachIndex(f: Int => Unit): Unit = {
+    loop(shape0) { i0 =>
+      f(i0)
+    }
+  }
+
+  inline def foreach(f: T => Unit): Unit =
+    foreachIndex { i0 =>
+      f(this (i0))
+    }
+
+  inline def foreachWithIndex(f: (T, Int) => Unit): Unit =
+    foreachIndex { i0 =>
+      f(this (i0), i0)
+    }
+
+  inline def mapInplace(f: T => T): Unit =
+    foreachIndex { i0 =>
+      val pos = getIndex(i0)
+      this.data(pos) = f(this.data(pos))
+    }
+
+  inline def mapWithIndexInplace(f: (T, Int) => T): Unit =
+    foreachIndex { i0 =>
+      val pos = getIndex(i0)
+      this.data(pos) = f(this.data(pos), i0)
+    }
+
+
+  override def :=(other: ArrayView1d[T]): Unit =
+    val broadcastedOther = other.broadcastTo(this)
+    foreachIndex { i0 =>
+      this (i0) = broadcastedOther(i0)
+    }
+
+  def fill(value: T): Unit =
+    foreachIndex { i0 =>
+      this (i0) = value
+    }
+
+  def fill(f: Int => T): Unit =
+    foreachIndex { i0 =>
+      this (i0) = f(i0)
+    }
+
+  def copy(using ClassTag[T]): ArrayView1dFlat[T] =
+    val r = ArrayView1dFlat[T](shape0)
+    r := this
+    r
+
+  override def withSimpleLayout(using ClassTag[T]): ArrayView1d[T] =
+    if (hasSimpleFlatLayout) this
+    else copy
+
+  def broadcastTo(view: ArrayView1d[?]): ArrayView1d[T] =
+    broadcast(view.shape0)
+
+  def broadcast(newShape0: Int = shape0): ArrayView1d[T] =
+    if (newShape0 == shape0) return this
+
+    if (isEmpty && newShape0 != 0) {
+      throw new IllegalArgumentException(s"Cannot broadcast empty view to shape $newShape0")
+    }
+
+    require(newShape0 == shape0 || shape0 <= 1 || stride0 == 0)
+
+    ArrayView1dImpl[T](
+      data,
+      shape0 = newShape0,
+      offset = offset,
+      stride0 = if (shape0 <= 1) 0 else stride0
+    )
+
+  override def flatten(using ClassTag[T]): ArrayView1dFlat[T] =
+    if (hasSimpleFlatLayout) ArrayView1dFlat(data)
+    else this.copy
+
+  override def reshape(shape0: Int, shape1: Int)(using ClassTag[T]): ArrayView2d[T] =
+    if (hasSimpleFlatLayout) {
+      ArrayView2d(data, shape0, shape1)
+    } else {
+      require(this.shape0 == shape0 * shape1)
+      ArrayView2dImpl(
+        data,
+        shape0 = shape0,
+        shape1 = shape1,
+        offset = offset,
+        stride0 = stride0 * shape1,
+        stride1 = stride0,
+      )
+    }
+
+  override def reshape(shape0: Int, shape1: Int, shape2: Int)(using ClassTag[T]): ArrayView3d[T] =
+    if (hasSimpleFlatLayout) {
+      ArrayView3d(data, shape0, shape1, shape2)
+    } else {
+      require(this.shape0 == shape0 * shape1 * shape2)
+      ArrayView3dImpl(
+        data,
+        shape0 = shape0,
+        shape1 = shape1,
+        shape2 = shape2,
+        offset = offset,
+        stride0 = stride0 * shape1 * shape2,
+        stride1 = stride0 * shape2,
+        stride2 = stride0,
+      )
+    }
+
+  override def reshape(shape0: Int, shape1: Int, shape2: Int, shape3: Int)(using ClassTag[T]): ArrayView4d[T] =
+    if (hasSimpleFlatLayout) {
+      ArrayView4d(data, shape0, shape1, shape2, shape3)
+    } else {
+      require(this.shape0 == shape0 * shape1 * shape2 * shape3)
+      ArrayView4dImpl(
+        data,
+        shape0 = shape0,
+        shape1 = shape1,
+        shape2 = shape2,
+        shape3 = shape3,
+        offset = offset,
+        stride0 = stride0 * shape1 * shape2 * shape3,
+        stride1 = stride0 * shape2 * shape3,
+        stride2 = stride0 * shape3,
+        stride3 = stride0,
+      )
+    }
+
+  transparent inline def view[T1 <: Int | Range](inline range0: AxisSize.Size ?=> T1): Any = {
+    val t0 = AxisSize.withAxisSize(shape0, range0)
+
+    val start0 = ArrayViewInternalUtil.getFirst(t0, shape0)
+
+    val offset = getIndex(start0)
+
+    inline t0 match {
+      case _: Int => ArrayView0dImpl(data, offset = offset)
+      case a: Range => ArrayView1dImpl(data, shape0 = a.size, offset = offset, stride0 = stride0 * a.step)
+    }
+  }
+
+object ArrayView1d:
+  inline def apply[T: ClassTag](shape0: Int): ArrayView1dFlat[T] =
+    ArrayView1dFlat(shape0)
+
+  inline def apply[T](data: Array[T]): ArrayView1dFlat[T] =
+    ArrayView1dFlat[T](data)
+
+  def apply[T](data: Array[T], shape0: Int, offset: Int, stride0: Int): ArrayView1d[T] =
+    if (data.length == shape0 && offset == 0 && stride0 == 1) ArrayView1dFlat(data)
+    else ArrayView1dImpl(data, shape0, offset, stride0)
+
+  def concat[T: ClassTag](arrayViews: Iterable[ArrayView1d[T]]): ArrayView1dFlat[T] =
+    apply[T](arrayViews.map(_.shape0).sum).tap { result =>
+      var offset = 0
+      for (view <- arrayViews) {
+        result.view(offset until (offset + view.shape0)) := view
+        offset += view.shape0
+      }
+    }
+
+  extension [T](view: ArrayView1d[T])
+    inline def map[U: ClassTag](f: T => U): ArrayView1dFlat[U] =
+      view.mapTo(f, ArrayView1dFlat[U](view.shape0))
+
+    inline def mapWithIndex[U: ClassTag](f: (T, Int) => U): ArrayView1dFlat[U] =
+      view.mapWithIndexTo(f, ArrayView1dFlat[U](view.shape0))
+
+    inline def mapTo[U, R <: ArrayView1d[U]](f: T => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0) =>
+        result(i0) = f(v)
+      }
+      result
+
+    inline def mapWithIndexTo[U, R <: ArrayView1d[U]](f: (T, Int) => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0) =>
+        result(i0) = f(v, i0)
+      }
+      result
