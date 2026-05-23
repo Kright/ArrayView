@@ -1,14 +1,41 @@
 import pl.project13.scala.sbt.JmhPlugin
 
 ThisBuild / organization := "me.kright"
-
-ThisBuild / version := "0.2.1-SNAPSHOT"
-
+ThisBuild / version := "0.3.0-SNAPSHOT"
 ThisBuild / scalaVersion := "3.8.3"
 
-ThisBuild / licenses := List(License.MIT)
+ThisBuild / description := "Lightweight and efficient multi-dimensional array views for Scala"
+ThisBuild / homepage := Some(url("https://github.com/kright/ArrayView"))
 ThisBuild / startYear := Some(2025)
 
+ThisBuild / developers := List(
+  Developer(
+    id = "Kright",
+    name = "Igor Slobodskov",
+    email = "simplicivy@gmail.com",
+    url = url("https://kright.me/about")
+  )
+)
+
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/kright/ArrayView"),
+    "scm:git@github.com:kright/ArrayView.git"
+  )
+)
+
+ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
+
+lazy val sonatypeSettings = Seq(
+  publishMavenStyle := true,
+  sonatypeCredentialHost := "central.sonatype.com",
+  sonatypeRepository := "https://central.sonatype.com/service/local",
+  publishTo := {
+    val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+    if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+    else sonatypePublishToBundle.value
+  }
+)
 
 lazy val scalatestSettings = Seq(
   libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.20" % "test",
@@ -24,8 +51,8 @@ lazy val compilerFlags =
 
 lazy val root = (project in file("."))
   .settings(
-    name := "arrayview",
-    packageSrc / publishArtifact := true,
+    name := "arrayview-root",
+    publish / skip := true,
   ).aggregate(
     arrayview.jvm,
     arrayview.js,
@@ -37,6 +64,7 @@ lazy val arrayview = crossProject(JSPlatform, JVMPlatform)
   .in(file("arrayview"))
   .settings(compilerFlags)
   .settings(scalatestSettings *)
+  .settings(sonatypeSettings)
 
 lazy val benchmark = project
   .in(file("benchmark"))
@@ -44,12 +72,9 @@ lazy val benchmark = project
   .settings(compilerFlags)
   .settings(
     name := "arrayview-benchmark",
+    publish / skip := true,
     scalaVersion := "3.8.3",
     libraryDependencies += "org.openjdk.jmh" % "jmh-core" % "1.37",
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.37"
   )
   .dependsOn(arrayview.jvm)
-
-// fix for jitpack
-publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
-publishM2Configuration := publishM2Configuration.value.withOverwrite(true)
