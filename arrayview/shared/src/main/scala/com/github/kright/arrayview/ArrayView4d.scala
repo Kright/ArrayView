@@ -82,20 +82,6 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
       this.data(pos) = f(this.data(pos), i0, i1, i2, i3)
     }
 
-  inline def map[U: ClassTag](f: T => U) =
-    val r = ArrayView4d[U](shape0, shape1, shape2, shape3)
-    foreachWithIndex { (v, i0, i1, i2, i3) =>
-      r(i0, i1, i2, i3) = f(v)
-    }
-    r
-
-  inline def mapWithIndex[U: ClassTag](f: (T, Int, Int, Int, Int) => U) =
-    val r = ArrayView4d[U](shape0, shape1, shape2, shape3)
-    foreachWithIndex { (v, i0, i1, i2, i3) =>
-      r(i0, i1, i2, i3) = f(v, i0, i1, i2, i3)
-    }
-    r
-
   override def :=(other: ArrayView4d[T]): Unit =
     val broadcastedOther = other.broadcastTo(this)
     foreachIndex { (i0, i1, i2, i3) =>
@@ -127,7 +113,7 @@ trait ArrayView4d[T] extends ArrayViewNd[T, ArrayView4d[T]]:
                                T4 <: Int | Range](inline range0: AxisSize.Size ?=> T1,
                                                   inline range1: AxisSize.Size ?=> T2,
                                                   inline range2: AxisSize.Size ?=> T3,
-                                                  inline range3: AxisSize.Size ?=> T4) = {
+                                                  inline range3: AxisSize.Size ?=> T4): Any = {
 
     val t0 = AxisSize.withAxisSize(shape0, range0)
     val t1 = AxisSize.withAxisSize(shape1, range1)
@@ -292,3 +278,24 @@ object ArrayView4d:
         }
       case _ =>
         throw IllegalArgumentException(s"Invalid axis: $axis. Must be 0, 1, 2, or 3")
+
+  extension [T](view: ArrayView4d[T])
+    inline def map[U: ClassTag](f: T => U): ArrayView4dFlat[U] =
+      view.mapTo(f, ArrayView4dFlat[U](view.shape0, view.shape1, view.shape2, view.shape3))
+
+    inline def mapWithIndex[U: ClassTag](f: (T, Int, Int, Int, Int) => U): ArrayView4dFlat[U] =
+      view.mapWithIndexTo(f, ArrayView4dFlat[U](view.shape0, view.shape1, view.shape2, view.shape3))
+
+    inline def mapTo[U, R <: ArrayView4d[U]](f: T => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0, i1, i2, i3) =>
+        result(i0, i1, i2, i3) = f(v)
+      }
+      result
+
+    inline def mapWithIndexTo[U, R <: ArrayView4d[U]](f: (T, Int, Int, Int, Int) => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0, i1, i2, i3) =>
+        result(i0, i1, i2, i3) = f(v, i0, i1, i2, i3)
+      }
+      result

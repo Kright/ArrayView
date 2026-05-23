@@ -61,19 +61,6 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
       this.data(pos) = f(this.data(pos), i0)
     }
 
-  inline def map[U: ClassTag](f: T => U) =
-    val r = ArrayView1d[U](shape0)
-    foreachWithIndex { (v, i0) =>
-      r(i0) = f(v)
-    }
-    r
-
-  inline def mapWithIndex[U: ClassTag](f: (T, Int) => U) =
-    val r = ArrayView1d[U](shape0)
-    foreachWithIndex { (v, i0) =>
-      r(i0) = f(v, i0)
-    }
-    r
 
   override def :=(other: ArrayView1d[T]): Unit =
     val broadcastedOther = other.broadcastTo(this)
@@ -174,14 +161,14 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
       )
     }
 
-  transparent inline def view[T1 <: Int | Range](inline range0: AxisSize.Size ?=> T1) = {
+  transparent inline def view[T1 <: Int | Range](inline range0: AxisSize.Size ?=> T1): Any = {
     val t0 = AxisSize.withAxisSize(shape0, range0)
 
     val start0 = ArrayViewInternalUtil.getFirst(t0, shape0)
 
     val offset = getIndex(start0)
 
-    inline (t0) match {
+    inline t0 match {
       case _: Int => ArrayView0dImpl(data, offset = offset)
       case a: Range => ArrayView1dImpl(data, shape0 = a.size, offset = offset, stride0 = stride0 * a.step)
     }
@@ -206,3 +193,24 @@ object ArrayView1d:
         offset += view.shape0
       }
     }
+
+  extension [T](view: ArrayView1d[T])
+    inline def map[U: ClassTag](f: T => U): ArrayView1dFlat[U] =
+      view.mapTo(f, ArrayView1dFlat[U](view.shape0))
+
+    inline def mapWithIndex[U: ClassTag](f: (T, Int) => U): ArrayView1dFlat[U] =
+      view.mapWithIndexTo(f, ArrayView1dFlat[U](view.shape0))
+
+    inline def mapTo[U, R <: ArrayView1d[U]](f: T => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0) =>
+        result(i0) = f(v)
+      }
+      result
+
+    inline def mapWithIndexTo[U, R <: ArrayView1d[U]](f: (T, Int) => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0) =>
+        result(i0) = f(v, i0)
+      }
+      result

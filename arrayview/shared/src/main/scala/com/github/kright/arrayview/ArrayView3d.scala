@@ -77,20 +77,6 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
       this.data(pos) = f(this.data(pos), i0, i1, i2)
     }
 
-  inline def map[U: ClassTag](f: T => U) =
-    val r = ArrayView3d[U](shape0, shape1, shape2)
-    foreachWithIndex { (v, i0, i1, i2) =>
-      r(i0, i1, i2) = f(v)
-    }
-    r
-
-  inline def mapWithIndex[U: ClassTag](f: (T, Int, Int, Int) => U) =
-    val r = ArrayView3d[U](shape0, shape1, shape2)
-    foreachWithIndex { (v, i0, i1, i2) =>
-      r(i0, i1, i2) = f(v, i0, i1, i2)
-    }
-    r
-
   override def :=(other: ArrayView3d[T]): Unit =
     val broadcastedOther = other.broadcastTo(this)
     foreachIndex { (i0, i1, i2) =>
@@ -120,7 +106,7 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
                                T2 <: Int | Range,
                                T3 <: Int | Range](inline range0: AxisSize.Size ?=> T1,
                                                   inline range1: AxisSize.Size ?=> T2,
-                                                  inline range2: AxisSize.Size ?=> T3) = {
+                                                  inline range2: AxisSize.Size ?=> T3): Any = {
     val t0 = AxisSize.withAxisSize(shape0, range0)
     val t1 = AxisSize.withAxisSize(shape1, range1)
     val t2 = AxisSize.withAxisSize(shape2, range2)
@@ -252,3 +238,24 @@ object ArrayView3d:
         }
       case _ =>
         throw IllegalArgumentException(s"Invalid axis: $axis. Must be 0, 1, or 2")
+
+  extension [T](view: ArrayView3d[T])
+    inline def map[U: ClassTag](f: T => U): ArrayView3dFlat[U] =
+      view.mapTo(f, ArrayView3dFlat[U](view.shape0, view.shape1, view.shape2))
+
+    inline def mapWithIndex[U: ClassTag](f: (T, Int, Int, Int) => U): ArrayView3dFlat[U] =
+      view.mapWithIndexTo(f, ArrayView3dFlat[U](view.shape0, view.shape1, view.shape2))
+
+    inline def mapTo[U, R <: ArrayView3d[U]](f: T => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0, i1, i2) =>
+        result(i0, i1, i2) = f(v)
+      }
+      result
+
+    inline def mapWithIndexTo[U, R <: ArrayView3d[U]](f: (T, Int, Int, Int) => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0, i1, i2) =>
+        result(i0, i1, i2) = f(v, i0, i1, i2)
+      }
+      result

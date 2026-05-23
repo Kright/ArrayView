@@ -15,7 +15,7 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
 
   def stride0: Int
   def stride1: Int
-  
+
   override def size: Int = shape0 * shape1
 
   override def isEmpty: Boolean =
@@ -38,7 +38,6 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
     shape0 == other.shape0 && shape1 == other.shape1
 
 
-  
   def isSquare: Boolean =
     shape0 == shape1
 
@@ -73,20 +72,6 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
       val pos = getIndex(i0, i1)
       this.data(pos) = f(this.data(pos), i0, i1)
     }
-
-  inline def map[U: ClassTag](f: T => U) =
-    val r = ArrayView2d[U](shape0, shape1)
-    foreachWithIndex { (v, i0, i1) =>
-      r(i0, i1) = f(v)
-    }
-    r
-
-  inline def mapWithIndex[U: ClassTag](f: (T, Int, Int) => U) =
-    val r = ArrayView2d[U](shape0, shape1)
-    foreachWithIndex { (v, i0, i1) =>
-      r(i0, i1) = f(v, i0, i1)
-    }
-    r
 
   override def :=(other: ArrayView2d[T]): Unit =
     val broadcastedOther = other.broadcastTo(this)
@@ -146,7 +131,7 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
     if (isEmpty && newShape0 != 0 && newShape1 != 0) {
       throw new IllegalArgumentException(s"Cannot broadcast empty view to shape $newShape0 x $newShape1")
     }
-    
+
     require(newShape0 == shape0 || shape0 <= 1 || stride0 == 0)
     require(newShape1 == shape1 || shape1 <= 1 || stride1 == 0)
 
@@ -162,7 +147,7 @@ trait ArrayView2d[T] extends ArrayViewNd[T, ArrayView2d[T]]:
 
   transparent inline def view [T1 <: Int | Range,
                                T2 <: Int | Range](inline range0: AxisSize.Size ?=> T1,
-                                                  inline range1: AxisSize.Size ?=> T2) = {
+                                                  inline range1: AxisSize.Size ?=> T2): Any = {
     val t0 = AxisSize.withAxisSize(shape0, range0)
     val t1 = AxisSize.withAxisSize(shape1, range1)
 
@@ -221,3 +206,24 @@ object ArrayView2d:
         }
       case _ =>
         throw IllegalArgumentException(s"Invalid axis: $axis. Must be 0 or 1")
+
+  extension [T](view: ArrayView2d[T])
+    inline def map[U: ClassTag](f: T => U): ArrayView2dFlat[U] =
+      view.mapTo(f, ArrayView2dFlat[U](view.shape0, view.shape1))
+
+    inline def mapWithIndex[U: ClassTag](f: (T, Int, Int) => U): ArrayView2dFlat[U] =
+      view.mapWithIndexTo(f, ArrayView2dFlat[U](view.shape0, view.shape1))
+
+    inline def mapTo[U, R <: ArrayView2d[U]](f: T => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0, i1) =>
+        result(i0, i1) = f(v)
+      }
+      result
+
+    inline def mapWithIndexTo[U, R <: ArrayView2d[U]](f: (T, Int, Int) => U, result: R): R =
+      require(view.hasSameSize(result))
+      view.foreachWithIndex { (v, i0, i1) =>
+        result(i0, i1) = f(v, i0, i1)
+      }
+      result
