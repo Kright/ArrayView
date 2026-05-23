@@ -26,10 +26,11 @@ ThisBuild / scmInfo := Some(
 
 ThisBuild / licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
 
+ThisBuild / sonatypeCredentialHost := "central.sonatype.com"
+ThisBuild / sonatypeRepository := "https://central.sonatype.com/service/local"
+
 lazy val sonatypeSettings = Seq(
   publishMavenStyle := true,
-  sonatypeCredentialHost := "central.sonatype.com",
-  sonatypeRepository := "https://central.sonatype.com/service/local",
   publishTo := {
     val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
     if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
