@@ -18,18 +18,18 @@ Code is under MIT License, feel free to use it or to suggest improvements.
 
 sbt:
 ```scala
-libraryDependencies += "me.kright" %% "arrayview" % "0.3.1"
+libraryDependencies += "me.kright" %% "arrayview" % "0.3.2"
 ```
 
 or for scala js
 sbt:
 ```scala
-libraryDependencies += "me.kright" %%% "arrayview" % "0.3.1"
+libraryDependencies += "me.kright" %%% "arrayview" % "0.3.2"
 ```
 
 gradle:
 ```groovy
-implementation 'me.kright:arrayview_3:0.3.1'
+implementation 'me.kright:arrayview_3:0.3.2'
 ```
 
 ## Examples
