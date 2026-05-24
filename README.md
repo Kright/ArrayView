@@ -16,16 +16,20 @@ Code is under MIT License, feel free to use it or to suggest improvements.
 
 ## How to add to a project:
 
-https://jitpack.io/#Kright/ArrayView
+sbt:
+```scala
+libraryDependencies += "me.kright" %% "arrayview" % "0.3.1"
+```
+
+or for scala js
+sbt:
+```scala
+libraryDependencies += "me.kright" %%% "arrayview" % "0.3.1"
+```
 
 gradle:
-```
-implementation "com.github.Kright.ArrayView:arrayview_3:0.1.6"
-```
-
-sbt:
-```
-libraryDependencies += "com.github.Kright.ArrayView" % "arrayview" % "0.1.6"
+```groovy
+implementation 'me.kright:arrayview_3:0.3.1'
 ```
 
 ## Examples

@@ -1,7 +1,7 @@
 import pl.project13.scala.sbt.JmhPlugin
 
 ThisBuild / organization := "me.kright"
-ThisBuild / version := "0.3.1-SNAPSHOT"
+ThisBuild / version := "0.3.1"
 ThisBuild / scalaVersion := "3.8.3"
 
 ThisBuild / description := "Lightweight and efficient multi-dimensional array views for Scala"
@@ -40,8 +40,8 @@ lazy val sonatypeSettings = Seq(
 )
 
 lazy val scalatestSettings = Seq(
-  libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.20" % "test",
-  libraryDependencies += "org.scalatestplus" %% "scalacheck-1-19" % "3.2.20.0" % "test",
+  libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.20" % "test",
+  libraryDependencies += "org.scalatestplus" %%% "scalacheck-1-19" % "3.2.20.0" % "test",
 )
 
 lazy val compilerFlags =
