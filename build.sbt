@@ -1,7 +1,7 @@
 import pl.project13.scala.sbt.JmhPlugin
 
 ThisBuild / organization := "me.kright"
-ThisBuild / version := "0.4.0"
+ThisBuild / version := "0.4.1-SNAPSHOT"
 ThisBuild / scalaVersion := "3.9.0"
 
 ThisBuild / description := "Lightweight and efficient multi-dimensional array views for Scala"
