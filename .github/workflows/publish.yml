@@ -29,7 +29,8 @@ jobs:
       - name: Check that tag matches version in build.sbt
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          VERSION=$(sbt -batch -error 'print root/version' | tail -n1 | tr -d '[:space:]')
+          VERSION=$(grep -oP '(?<=ThisBuild / version := ")[^"]+' build.sbt)
+          if [ -z "$VERSION" ]; then echo "::error::could not extract version from build.sbt"; exit 1; fi
           if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
             echo "Tag $GITHUB_REF_NAME does not match build.sbt version $VERSION"
             exit 1
