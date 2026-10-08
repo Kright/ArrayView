@@ -16,20 +16,22 @@ Code is under MIT License, feel free to use it or to suggest improvements.
 
 ## How to add to a project:
 
+Requires Scala 3.9 or newer (use version 0.3.2 for older Scala 3 versions).
+
 sbt:
 ```scala
-libraryDependencies += "me.kright" %% "arrayview" % "0.3.2"
+libraryDependencies += "me.kright" %% "arrayview" % "0.4.0"
 ```
 
 or for scala js
 sbt:
 ```scala
-libraryDependencies += "me.kright" %%% "arrayview" % "0.3.2"
+libraryDependencies += "me.kright" %%% "arrayview" % "0.4.0"
 ```
 
 gradle:
 ```groovy
-implementation 'me.kright:arrayview_3:0.3.2'
+implementation 'me.kright:arrayview_3:0.4.0'
 ```
 
 ## Examples

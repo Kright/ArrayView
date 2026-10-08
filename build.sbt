@@ -1,8 +1,8 @@
 import pl.project13.scala.sbt.JmhPlugin
 
 ThisBuild / organization := "me.kright"
-ThisBuild / version := "0.3.3-SNAPSHOT"
-ThisBuild / scalaVersion := "3.8.3"
+ThisBuild / version := "0.4.0"
+ThisBuild / scalaVersion := "3.9.0"
 
 ThisBuild / description := "Lightweight and efficient multi-dimensional array views for Scala"
 ThisBuild / homepage := Some(url("https://github.com/kright/ArrayView"))
@@ -76,7 +76,7 @@ lazy val benchmark = project
   .settings(
     name := "arrayview-benchmark",
     publish / skip := true,
-    scalaVersion := "3.8.3",
+    scalaVersion := "3.9.0",
     libraryDependencies += "org.openjdk.jmh" % "jmh-core" % "1.37",
     libraryDependencies += "org.openjdk.jmh" % "jmh-generator-annprocess" % "1.37"
   )
