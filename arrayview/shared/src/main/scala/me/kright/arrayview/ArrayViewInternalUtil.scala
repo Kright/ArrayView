@@ -25,7 +25,7 @@ private[arrayview] object ArrayViewInternalUtil:
       }
     }
 
-  inline def loop(count: Int)(f: Int => Unit): Unit =
+  inline def loop(count: Int)(inline f: Int => Unit): Unit =
     var i = 0
     while (i < count) {
       f(i)

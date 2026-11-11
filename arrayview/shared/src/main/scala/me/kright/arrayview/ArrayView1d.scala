@@ -33,29 +33,29 @@ trait ArrayView1d[T] extends ArrayViewNd[T, ArrayView1d[T]]:
   def hasSameSize(other: ArrayView1d[?]): Boolean =
     shape0 == other.shape0
 
-  inline def foreachIndex(f: Int => Unit): Unit = {
+  inline def foreachIndex(inline f: Int => Unit): Unit = {
     loop(shape0) { i0 =>
       f(i0)
     }
   }
 
-  inline def foreach(f: T => Unit): Unit =
+  inline def foreach(inline f: T => Unit): Unit =
     foreachIndex { i0 =>
       f(this (i0))
     }
 
-  inline def foreachWithIndex(f: (T, Int) => Unit): Unit =
+  inline def foreachWithIndex(inline f: (T, Int) => Unit): Unit =
     foreachIndex { i0 =>
       f(this (i0), i0)
     }
 
-  inline def mapInplace(f: T => T): Unit =
+  inline def mapInplace(inline f: T => T): Unit =
     foreachIndex { i0 =>
       val pos = getIndex(i0)
       this.data(pos) = f(this.data(pos))
     }
 
-  inline def mapWithIndexInplace(f: (T, Int) => T): Unit =
+  inline def mapWithIndexInplace(inline f: (T, Int) => T): Unit =
     foreachIndex { i0 =>
       val pos = getIndex(i0)
       this.data(pos) = f(this.data(pos), i0)
@@ -195,20 +195,20 @@ object ArrayView1d:
     }
 
   extension [T](view: ArrayView1d[T])
-    inline def map[U: ClassTag](f: T => U): ArrayView1dFlat[U] =
+    inline def map[U: ClassTag](inline f: T => U): ArrayView1dFlat[U] =
       view.mapTo(f, ArrayView1dFlat[U](view.shape0))
 
-    inline def mapWithIndex[U: ClassTag](f: (T, Int) => U): ArrayView1dFlat[U] =
+    inline def mapWithIndex[U: ClassTag](inline f: (T, Int) => U): ArrayView1dFlat[U] =
       view.mapWithIndexTo(f, ArrayView1dFlat[U](view.shape0))
 
-    inline def mapTo[U, R <: ArrayView1d[U]](f: T => U, result: R): R =
+    inline def mapTo[U, R <: ArrayView1d[U]](inline f: T => U, result: R): R =
       require(view.hasSameSize(result))
       view.foreachWithIndex { (v, i0) =>
         result(i0) = f(v)
       }
       result
 
-    inline def mapWithIndexTo[U, R <: ArrayView1d[U]](f: (T, Int) => U, result: R): R =
+    inline def mapWithIndexTo[U, R <: ArrayView1d[U]](inline f: (T, Int) => U, result: R): R =
       require(view.hasSameSize(result))
       view.foreachWithIndex { (v, i0) =>
         result(i0) = f(v, i0)

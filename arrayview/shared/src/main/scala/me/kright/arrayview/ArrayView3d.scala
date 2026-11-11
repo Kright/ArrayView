@@ -44,7 +44,7 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
     shape0 == shape1 && shape1 == shape2
 
 
-  inline def foreachIndex(f: (Int, Int, Int) => Unit): Unit = {
+  inline def foreachIndex(inline f: (Int, Int, Int) => Unit): Unit = {
     loop(shape0) { i0 =>
       loop(shape1) { i1 =>
         loop(shape2) { i2 =>
@@ -54,24 +54,24 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
     }
   }
 
-  inline def foreach(f: T => Unit): Unit =
+  inline def foreach(inline f: T => Unit): Unit =
     foreachIndex { (i0, i1, i2) =>
       f(this (i0, i1, i2))
     }
 
-  inline def foreachWithIndex(f: (T, Int, Int, Int) => Unit): Unit =
+  inline def foreachWithIndex(inline f: (T, Int, Int, Int) => Unit): Unit =
     foreachIndex { (i0, i1, i2) =>
       f(this (i0, i1, i2), i0, i1, i2)
     }
 
 
-  inline def mapInplace(f: T => T): Unit =
+  inline def mapInplace(inline f: T => T): Unit =
     foreachIndex { (i0, i1, i2) =>
       val pos = getIndex(i0, i1, i2)
       this.data(pos) = f(this.data(pos))
     }
 
-  inline def mapWithIndexInplace(f: (T, Int, Int, Int) => T): Unit =
+  inline def mapWithIndexInplace(inline f: (T, Int, Int, Int) => T): Unit =
     foreachIndex { (i0, i1, i2) =>
       val pos = getIndex(i0, i1, i2)
       this.data(pos) = f(this.data(pos), i0, i1, i2)
@@ -88,7 +88,7 @@ trait ArrayView3d[T] extends ArrayViewNd[T, ArrayView3d[T]]:
       this (i0, i1, i2) = value
     }
 
-  inline def fill(f: (i0: Int, i1: Int, i2: Int) => T): Unit =
+  inline def fill(inline f: (i0: Int, i1: Int, i2: Int) => T): Unit =
     foreachIndex { (i0, i1, i2) =>
       this (i0, i1, i2) = f(i0, i1, i2)
     }
@@ -240,20 +240,20 @@ object ArrayView3d:
         throw IllegalArgumentException(s"Invalid axis: $axis. Must be 0, 1, or 2")
 
   extension [T](view: ArrayView3d[T])
-    inline def map[U: ClassTag](f: T => U): ArrayView3dFlat[U] =
+    inline def map[U: ClassTag](inline f: T => U): ArrayView3dFlat[U] =
       view.mapTo(f, ArrayView3dFlat[U](view.shape0, view.shape1, view.shape2))
 
-    inline def mapWithIndex[U: ClassTag](f: (T, Int, Int, Int) => U): ArrayView3dFlat[U] =
+    inline def mapWithIndex[U: ClassTag](inline f: (T, Int, Int, Int) => U): ArrayView3dFlat[U] =
       view.mapWithIndexTo(f, ArrayView3dFlat[U](view.shape0, view.shape1, view.shape2))
 
-    inline def mapTo[U, R <: ArrayView3d[U]](f: T => U, result: R): R =
+    inline def mapTo[U, R <: ArrayView3d[U]](inline f: T => U, result: R): R =
       require(view.hasSameSize(result))
       view.foreachWithIndex { (v, i0, i1, i2) =>
         result(i0, i1, i2) = f(v)
       }
       result
 
-    inline def mapWithIndexTo[U, R <: ArrayView3d[U]](f: (T, Int, Int, Int) => U, result: R): R =
+    inline def mapWithIndexTo[U, R <: ArrayView3d[U]](inline f: (T, Int, Int, Int) => U, result: R): R =
       require(view.hasSameSize(result))
       view.foreachWithIndex { (v, i0, i1, i2) =>
         result(i0, i1, i2) = f(v, i0, i1, i2)
