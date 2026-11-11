@@ -5,7 +5,7 @@ ThisBuild / version := "0.4.1-SNAPSHOT"
 ThisBuild / scalaVersion := "3.9.0"
 
 ThisBuild / description := "Lightweight and efficient multi-dimensional array views for Scala"
-ThisBuild / homepage := Some(url("https://github.com/kright/ArrayView"))
+ThisBuild / homepage := Some(url("https://github.com/Kright/ArrayView"))
 ThisBuild / startYear := Some(2025)
 
 ThisBuild / developers := List(
@@ -19,8 +19,8 @@ ThisBuild / developers := List(
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
-    url("https://github.com/kright/ArrayView"),
-    "scm:git@github.com:kright/ArrayView.git"
+    url("https://github.com/Kright/ArrayView"),
+    "scm:git:git@github.com:Kright/ArrayView.git"
   )
 )
 
