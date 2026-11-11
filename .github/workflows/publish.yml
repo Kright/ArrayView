@@ -91,7 +91,24 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: |
-          sbt sonatypeBundleRelease
+          set -o pipefail
+          sbt sonatypeBundleRelease 2>&1 | tee /tmp/release.log
+
+      - name: Show Sonatype validation errors
+        if: failure() && startsWith(github.ref, 'refs/tags/v')
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: |
+          if [ ! -f /tmp/release.log ]; then echo "release step did not run, nothing to show"; exit 0; fi
+          id=$(grep -oiP 'deployment id: \K[0-9a-f-]{36}' /tmp/release.log | tail -n 1 || true)
+          if [ -z "$id" ]; then echo "no deployment id found in release log"; exit 0; fi
+          auth=$(printf '%s:%s' "$SONATYPE_USERNAME" "$SONATYPE_PASSWORD" | base64 -w0)
+          curl -s -X POST -H "Authorization: Bearer $auth" \
+            "https://central.sonatype.com/api/v1/publisher/status?id=$id" -o /tmp/deployment-status.json || true
+          status=$(jq -c . /tmp/deployment-status.json 2>/dev/null || tr '\n' ' ' < /tmp/deployment-status.json)
+          echo "$status"
+          echo "::error title=Sonatype deployment $id failed::${status:0:3500}"
 
       - name: Create GitHub Release (only for tags)
         if: startsWith(github.ref, 'refs/tags/v')
