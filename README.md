@@ -20,18 +20,18 @@ Requires Scala 3.9 or newer (use version 0.3.2 for older Scala 3 versions).
 
 sbt:
 ```scala
-libraryDependencies += "me.kright" %% "arrayview" % "0.4.1"
+libraryDependencies += "me.kright" %% "arrayview" % "0.4.2"
 ```
 
 or for scala js
 sbt:
 ```scala
-libraryDependencies += "me.kright" %%% "arrayview" % "0.4.1"
+libraryDependencies += "me.kright" %%% "arrayview" % "0.4.2"
 ```
 
 gradle:
 ```groovy
-implementation 'me.kright:arrayview_3:0.4.1'
+implementation 'me.kright:arrayview_3:0.4.2'
 ```
 
 ## Examples
